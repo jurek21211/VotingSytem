@@ -9,9 +9,26 @@ class Database():
         self._dbUser = "bastionk_vote"
         self._dbPasswd = "Glosowanie12"
 
-    def addYesVote(self):
-        db = MySQLdb.connect(host=self._dbHost, user=self._dbUser,
+
+
+    def dbConnect(self):
+        return MySQLdb.connect(host=self._dbHost, user=self._dbUser,
                              passwd=self._dbPasswd, db=self._dbName)
+
+    def TEST(self):
+        db = self.dbConnect()
+
+        Cursor = db.cursor()
+        Cursor.execute("SELECT * FROM Test")
+        result = Cursor.fetchall()
+
+        for row in result:
+            print(row)
+
+        db.close()
+
+    def addYesVote(self):
+        db = self.dbConnect()
 
         Cursor = db.cursor()
         # Cursor.execute() Query: Increase YES value by 1
@@ -19,8 +36,8 @@ class Database():
         db.close()
 
     def addNoVote(self):
-        db = MySQLdb.connect(host=self._dbHost, user=self._dbUser,
-                             passwd=self._dbPasswd, db=self._dbName)
+
+        db = self.dbConnect()
 
         Cursor = db.cursor()
         # Cursor.execute() Query: Increase NO value by 1
@@ -28,8 +45,7 @@ class Database():
         db.close()
 
     def isAllowedToVote(self, userID):
-        db = MySQLdb.connect(host=self._dbHost, user=self._dbUser,
-                             passwd=self._dbPasswd, db=self._dbName)
+        db = self.dbConnect()
 
         Cursor = db.cursor()
         # Cursor.execute() Query: Check if value for specific userID in "voted flag" is Yes or No
@@ -42,11 +58,11 @@ class Database():
             db.close()
             return False
 
-    def justVoted(self, userID):
-        db = MySQLdb.connect(host=self._dbHost, user=self._dbUser,
-                             passwd=self._dbPasswd, db=self._dbName)
+    def setVotedToYes(self, userID):
+        db = self.dbConnect()
 
         Cursor = db.cursor()
         # Cursor.execute() #Query: Update value on "voted flag" and set to No for specific usedID
         db.commit()
         db.close()
+
