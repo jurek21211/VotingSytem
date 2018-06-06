@@ -32,7 +32,7 @@ if (isset($_SESSION['login'])) {
         if (in_array($username, $card_id) && $password === 'password'){
             $_SESSION['login'] = true;
             $_SESSION['user'] = $username;
-            header('LOCATION:admin.php');
+            header('LOCATION:steering.php');
             die();
         } {
             echo "<div class='alert alert-danger'>Username and Password do not match.</div>";
