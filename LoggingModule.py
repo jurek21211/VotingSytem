@@ -4,14 +4,14 @@ import socket
 import time
 import signal
 import sys
+import LCD
+from DatabaseModule import Database
 
 import Adafruit_PN532 as PN532
 
 
 
 DELAY = 0.5
-
-
 
 def connectToNFC():
     def close(signal, frame):
@@ -33,22 +33,49 @@ def connectToNFC():
     pn532.SAM_configuration()
     return pn532
 def logIn(NFC):
-     ID = [21695,176682,203231,203277,176784,150035,176999]
-     
+     mylcd = LCD.lcd()
+     database = Database()
      while True:
          
          UserId = NFC.read_passive_target()
-         
+         if UserId is None:
+             mylcd.lcd_display_string("Przyloz karte",1)
+             mylcd.lcd_display_string("aby zaglosowac",2)
          if UserId is None:
             continue
-            
+          
          UserId = format(binascii.hexlify(UserId))
-         UserId = int(UserId, 16) // 10000
-        
-         if UserId in ID:
-             print("Zalogowano")
-             return True
-         else:
-             print("Nieuprawniony")
-             return False
+         UserId = str(int(UserId, 16))
+         isAllowed = database.isAllowedToVote(UserId)
+         if isAllowed == 1 :
+             if UserId =='2169576700':
+                 mylcd.lcd_clear()
+                 mylcd.lcd_display_string("Administracja",1)
+                 time.sleep(3)
+                 mylcd.lcd_clear()
+                 mylcd.lcd_display_string("Nieb=START",1)
+                 mylcd.lcd_display_string("Czer=STOP,3=Arch",2)
+                
+             else:
+                 mylcd.lcd_clear()
+                 mylcd.lcd_display_string("Zalogowano",1)
+                 time.sleep(3)
+                 mylcd.lcd_clear()
+                 mylcd.lcd_display_string("Tak czy nie ?",1)
+                 mylcd.lcd_display_string("Dokonaj wyboru",2)
+             return (True, UserId)
+         elif isAllowed == 0:
+             mylcd.lcd_clear()
+             mylcd.lcd_display_string("Nieuprawniony",1)
+             mylcd.lcd_display_string("uzytkownik",2)
+             time.sleep(2)
+             return (False, UserId)
+         elif isAllowed == -1:
+             mylcd.lcd_clear()
+             mylcd.lcd_display_string("Taki uzytkownik",1)
+             mylcd.lcd_display_string("nie istnieje",2)
+             return (False, UserId)
+         
+             
+             
         

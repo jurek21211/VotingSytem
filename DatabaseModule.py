@@ -15,11 +15,13 @@ class Database():
         return MySQLdb.connect(host=self._dbHost, user=self._dbUser,
                              passwd=self._dbPasswd, db=self._dbName)
 
-    def TEST(self):
+    def TEST(self, userID):
+        
         db = self.dbConnect()
 
         Cursor = db.cursor()
-        Cursor.execute("SELECT * FROM Test")
+        Cursor.execute("SELECT * FROM Test WHERE Id = %s", [userID])
+       # Cursor.execute("SELECT NOW()")
         result = Cursor.fetchall()
 
         for row in result:
@@ -31,7 +33,7 @@ class Database():
         db = self.dbConnect()
 
         Cursor = db.cursor()
-        # Cursor.execute() Query: Increase YES value by 1
+        Cursor.execute("UPDATE Polls SET yes_votes = yes_votes + 1 WHERE closed = 'open'") #Query: Increase YES value by 1
         db.commit()
         db.close()
 
@@ -40,29 +42,32 @@ class Database():
         db = self.dbConnect()
 
         Cursor = db.cursor()
-        # Cursor.execute() Query: Increase NO value by 1
+        Cursor.execute("UPDATE Polls SET no_votes = no_votes + 1 WHERE closed = 'open'") #Query: Increase NO value by 1
         db.commit()
         db.close()
 
-    def isAllowedToVote(self, userID):
+    def isAllowedToVote(self,userID):
         db = self.dbConnect()
+        
 
         Cursor = db.cursor()
-        # Cursor.execute() Query: Check if value for specific userID in "voted flag" is Yes or No
-        # isAllowed = Cursor.fetchall()
-        if isAllowed[0] == "Yes":
+        Cursor.execute("SELECT Voted FROM voters WHERE Card_ID = %s", [userID] ) #Query: Check if value for specific userID in "voted flag" is Yes or No
+        
+        Voted = Cursor.fetchall()
+        if Voted[0][0] == 'yes':
             db.close()
-            return True
+            return 0
 
-        elif isAllowed[0] == "No":
+        elif Voted[0][0] == 'no':
             db.close()
-            return False
-
+            return 1
+        else:
+            return -1
     def setVotedToYes(self, userID):
         db = self.dbConnect()
 
         Cursor = db.cursor()
-        # Cursor.execute() #Query: Update value on "voted flag" and set to No for specific usedID
+        Cursor.execute("UPDATE voters SET Voted = 'yes' WHERE Card_ID = %s", [userID] ) #Query: Update value on "voted flag" and set to No for specific usedID
         db.commit()
         db.close()
 
