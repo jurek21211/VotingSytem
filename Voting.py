@@ -12,6 +12,7 @@ database = Database()
 admin = Administrator()
 
 while True:
+    
     Allowed = LoggingModule.logIn(NFC_Reader)
     if Allowed[1] == "2169576700":   
         while True:

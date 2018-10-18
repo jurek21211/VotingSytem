@@ -17,4 +17,4 @@ from DatabaseModule import Database
 
 Database = Database()
 
-print (Database.TEST(2))
+print (Database.TEST(3))

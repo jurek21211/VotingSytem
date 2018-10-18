@@ -37,12 +37,16 @@ def logIn(NFC):
      database = Database()
      while True:
          
+         
          UserId = NFC.read_passive_target()
          if UserId is None:
+             mylcd.lcd_clear()
              mylcd.lcd_display_string("Przyloz karte",1)
              mylcd.lcd_display_string("aby zaglosowac",2)
+    
+             
          if UserId is None:
-            continue
+             continue
           
          UserId = format(binascii.hexlify(UserId))
          UserId = str(int(UserId, 16))
@@ -57,14 +61,34 @@ def logIn(NFC):
                  mylcd.lcd_display_string("Czer=STOP,3=Arch",2)
                 
              else:
+                 if database.ifopen()==False:
+                     mylcd.lcd_clear()
+                     mylcd.lcd_display_string("Brak otwartego ",1)
+                     mylcd.lcd_display_string("glosowania.",2)
+                     time.sleep(3)
+                     continue
                  mylcd.lcd_clear()
                  mylcd.lcd_display_string("Zalogowano",1)
                  time.sleep(3)
+                
                  mylcd.lcd_clear()
                  mylcd.lcd_display_string("Tak czy nie ?",1)
                  mylcd.lcd_display_string("Dokonaj wyboru",2)
              return (True, UserId)
          elif isAllowed == 0:
+             if UserId =='2169576700':
+                 mylcd.lcd_clear()
+                 mylcd.lcd_display_string("Administracja",1)
+                 time.sleep(3)
+                 mylcd.lcd_clear()
+                 mylcd.lcd_display_string("Nieb=START",1)
+                 mylcd.lcd_display_string("Czer=STOP,3=Arch",2)
+             if database.ifopen()==False:
+                     mylcd.lcd_clear()
+                     mylcd.lcd_display_string("Brak otwartego ",1)
+                     mylcd.lcd_display_string("glosowania.",2)
+                     time.sleep(3)
+                     continue
              mylcd.lcd_clear()
              mylcd.lcd_display_string("Nieuprawniony",1)
              mylcd.lcd_display_string("uzytkownik",2)
@@ -74,6 +98,7 @@ def logIn(NFC):
              mylcd.lcd_clear()
              mylcd.lcd_display_string("Taki uzytkownik",1)
              mylcd.lcd_display_string("nie istnieje",2)
+             time.sleep(2)
              return (False, UserId)
          
              

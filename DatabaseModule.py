@@ -15,18 +15,27 @@ class Database():
         return MySQLdb.connect(host=self._dbHost, user=self._dbUser,
                              passwd=self._dbPasswd, db=self._dbName)
 
+    def ifopen(self):
+        db = self.dbConnect()
+        Cursor = db.cursor()
+        Cursor.execute("SELECT closed FROM Polls WHERE closed = 'open'")
+        Result = Cursor.fetchall()
+        if Result == ():
+            return False
+        else:
+            return True
     def TEST(self, userID):
         
         db = self.dbConnect()
 
         Cursor = db.cursor()
-        Cursor.execute("SELECT * FROM Test WHERE Id = %s", [userID])
+        Cursor.execute("SELECT Voted FROM voters WHERE Card_ID = %s", [userID])
        # Cursor.execute("SELECT NOW()")
         result = Cursor.fetchall()
 
-        for row in result:
-            print(row)
-
+        #for row in result:
+         #   print(row)
+	return (result)
         db.close()
 
     def addYesVote(self):
@@ -48,19 +57,19 @@ class Database():
 
     def isAllowedToVote(self,userID):
         db = self.dbConnect()
-        
+        Voted_Cursor = db.cursor()
 
-        Cursor = db.cursor()
-        Cursor.execute("SELECT Voted FROM voters WHERE Card_ID = %s", [userID] ) #Query: Check if value for specific userID in "voted flag" is Yes or No
+        Voted_Cursor.execute("SELECT Voted FROM voters WHERE Card_ID = %s", [userID] ) #Query: Check if value for specific userID in "voted flag" is Yes or No
         
-        Voted = Cursor.fetchall()
-        if Voted[0][0] == 'yes':
-            db.close()
-            return 0
+        Voted = Voted_Cursor.fetchall()
+        if Voted != ():
+            if Voted[0][0] == 'yes' :
+                db.close()
+                return 0
 
-        elif Voted[0][0] == 'no':
-            db.close()
-            return 1
+            elif Voted[0][0] == 'no':
+                db.close()
+                return 1
         else:
             return -1
     def setVotedToYes(self, userID):

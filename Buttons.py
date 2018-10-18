@@ -16,7 +16,7 @@ def Choice():
             return 1
         if input_No == True:
             return 0
-        if archive = True:
+        if archive == True:
             return 2
         
 def AdminChoice():
@@ -28,5 +28,5 @@ def AdminChoice():
             return 1
         if close == True:
             return 0
-        if archive = True:
+        if archive == True:
             return 2
